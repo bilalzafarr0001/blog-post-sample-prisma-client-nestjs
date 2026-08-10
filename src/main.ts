@@ -15,7 +15,9 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Blog API')
-    .setDescription('Users, Posts and Comments endpoints for the Prisma blog example')
+    .setDescription(
+      'Users, Posts and Comments endpoints for the Prisma blog example',
+    )
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
@@ -23,4 +25,4 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap();
+void bootstrap();
