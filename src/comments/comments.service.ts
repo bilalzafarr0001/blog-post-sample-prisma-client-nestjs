@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
@@ -9,9 +13,9 @@ const authorSelect = { select: { id: true, name: true, email: true } };
 export class CommentsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(dto: CreateCommentDto) {
+  create(dto: CreateCommentDto, authorId: string) {
     return this.prisma.comment.create({
-      data: dto,
+      data: { ...dto, authorId },
       include: { author: authorSelect },
     });
   }
@@ -35,8 +39,8 @@ export class CommentsService {
     return comment;
   }
 
-  async update(id: string, dto: UpdateCommentDto) {
-    await this.ensureExists(id);
+  async update(id: string, dto: UpdateCommentDto, userId: string) {
+    await this.ensureOwnership(id, userId);
     return this.prisma.comment.update({
       where: { id },
       data: dto,
@@ -44,16 +48,19 @@ export class CommentsService {
     });
   }
 
-  async remove(id: string) {
-    await this.ensureExists(id);
+  async remove(id: string, userId: string) {
+    await this.ensureOwnership(id, userId);
     await this.prisma.comment.delete({ where: { id } });
     return { id };
   }
 
-  private async ensureExists(id: string) {
+  private async ensureOwnership(id: string, userId: string) {
     const comment = await this.prisma.comment.findUnique({ where: { id } });
     if (!comment) {
       throw new NotFoundException(`Comment with id ${id} not found`);
+    }
+    if (comment.authorId !== userId) {
+      throw new ForbiddenException('You can only modify your own comments');
     }
     return comment;
   }

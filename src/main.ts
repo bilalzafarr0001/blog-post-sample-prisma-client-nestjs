@@ -19,6 +19,7 @@ async function bootstrap() {
       'Users, Posts and Comments endpoints for the Prisma blog example',
     )
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

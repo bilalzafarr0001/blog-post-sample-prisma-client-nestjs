@@ -7,7 +7,4 @@ export class CreateCommentDto {
 
   @IsUUID()
   postId: string;
-
-  @IsUUID()
-  authorId: string;
 }

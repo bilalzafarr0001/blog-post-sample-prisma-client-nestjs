@@ -1,10 +1,4 @@
-import {
-  IsBoolean,
-  IsOptional,
-  IsString,
-  IsUUID,
-  MinLength,
-} from 'class-validator';
+import { IsBoolean, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class CreatePostDto {
   @IsString()
@@ -18,7 +12,4 @@ export class CreatePostDto {
   @IsOptional()
   @IsBoolean()
   published?: boolean;
-
-  @IsUUID()
-  authorId: string;
 }
